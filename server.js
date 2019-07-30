@@ -27,19 +27,22 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/newsScraper", { useNewUrlParser: true });
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+mongoose.connect(MONGODB_URI);
 
 // Routes
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
-  axios.get("https://www.aans.org/en/Patients/Neurosurgical-Conditions-and-Treatments/Tethered-Spinal-Cord-Syndrome").then(function(response) {
+  axios.get("https://www.entrepreneur.com/topic/coding").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $("p").each(function(i, element) {
+    $("h3").each(function(i, element) {
       // Save an empty result object
       var result = {};
 
