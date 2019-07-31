@@ -34,14 +34,14 @@ mongoose.connect(MONGODB_URI);
 
 // Routes
 
-// A GET route for scraping the echoJS website
+// A GET route for scraping the website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
   axios.get("https://www.entrepreneur.com/topic/coding").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
-    // Now, we grab every h2 within an article tag, and do the following:
+   
     $("block").each(function(i, element) {
       // Save an empty result object
       var result = {};
