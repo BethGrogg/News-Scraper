@@ -42,19 +42,22 @@ app.get("/scrape", function(req, res) {
     var $ = cheerio.load(response.data);
 
    
-    $("block").each(function(i, element) {
+    $("h3").each(function(i, element) {
       // Save an empty result object
       var result = {};
 
       // Add the text and href of every link, and save them as properties of the result object
       result.title = $(this)
-        .children("h3 a")
+        .children("a")
         .text();
       result.link = $(this)
-        .children("h3 a")
+        .children("a")
         .attr("href");
-      result.summary = $(this)
-      .children("div .deck");
+       result.summary = $(this)
+       
+       .siblings(".deck")
+       .text();
+      result.saved = false;
      
         
 
@@ -62,7 +65,7 @@ app.get("/scrape", function(req, res) {
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
-          console.log(dbArticle);
+          console.log("this: " + dbArticle);
         })
         .catch(function(err) {
           // If an error occurred, log it
@@ -78,7 +81,7 @@ app.get("/scrape", function(req, res) {
 // Route for getting all Articles from the db
 app.get("/articles", function(req, res) {
   // TODO: Finish the route so it grabs all of the articles
-  db.Article.find({})
+  db.Article.find({saved: false})
   .then (function(dbArticle) {
     // If any Libraries are found, send them to the client with any associated Books
     res.json(dbArticle);
@@ -88,6 +91,29 @@ app.get("/articles", function(req, res) {
     res.json(err);
   });
 });
+
+// delete all articles
+app.delete("/articles/deleteAll", function(req, res) {
+    // Remove all the articles
+    db.Article.remove( { } ).then(function(err) {
+      res.json(err);
+    })
+    
+      
+  });
+
+// Route for getting saved article
+app.get("/saved", function(req, res) {
+
+    db.Article
+      .find({ saved: true })
+      .then(function(dbArticle) {
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        res.json(err);
+      });
+  });
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function(req, res) {
@@ -135,10 +161,10 @@ app.post("/articles/:id", function(req, res) {
 });
 
 // Save an article
-app.post("/articles/save/:id", function(req, res) {
+app.put("/articles/save/:id", function(req, res) {
     // Use the article id to find and update its saved boolean
     console.log("in here: " + req.params);
-    Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": true})
+    db.Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": true})
     // Execute the above query
     .then(function(dbArticle) {
         res.send(dbArticle);
@@ -152,7 +178,7 @@ app.post("/articles/save/:id", function(req, res) {
 // Delete an article
 app.post("/articles/delete/:id", function(req, res) {
     // Use the article id to find and update its saved boolean
-    Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
+    db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
     // Execute the above query
     .then(function(dbArticle) {
         res.send(dbArticle);
@@ -182,7 +208,7 @@ newNote.save(function(error, note) {
   // Otherwise
   else {
     // Use the article id to find and update it's notes
-    Article.findOneAndUpdate({ "_id": req.params.id }, {$push: { "notes": note } })
+    db.Article.findOneAndUpdate({ "_id": req.params.id }, {$push: { "notes": note } })
     // Execute the above query
     .exec(function(err) {
       // Log any errors
@@ -209,7 +235,7 @@ Note.findOneAndRemove({ "_id": req.params.note_id }, function(err) {
     res.send(err);
   }
   else {
-    Article.findOneAndUpdate({ "_id": req.params.article_id }, {$pull: {"notes": req.params.note_id}})
+    db.Article.findOneAndUpdate({ "_id": req.params.article_id }, {$pull: {"notes": req.params.note_id}})
      // Execute the above query
       .exec(function(err) {
         // Log any errors
