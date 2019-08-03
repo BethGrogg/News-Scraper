@@ -106,12 +106,13 @@ console.log("I am here");
         // We return the constructed card jQuery element
         return card;
     }
-
+var Id;
     function createSavedCard(article) {
         // This function takes in a single JSON object for an article/headline
         // It constructs a jQuery element containing all of the formatted HTML for the
         // article card
         console.log(article);
+        Id = article._id;
         var card = $("<div class='card'>");
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
@@ -230,18 +231,16 @@ console.log("I am here");
             })
           
         };
-var noteId;
-var noteArticleId;
+
     function showNote() {
         console.log("i am in the note modal");
-        
+        $(document).on("click", "#noteModal", function () { 
+        var articleId = Id;
+        $(".modal-body #note-body").val(body);
             
-            var noteArticleId = $(this)
-            .parents(".card")
-            .data();
 
-            console.log(noteArticleId);
-        
+            console.log(articleId);
+        });
     };
 
     function deleteArticle() {
@@ -288,12 +287,12 @@ var noteArticleId;
             data: title
         }).then(function (data) {
             // If the data was saved successfully
-            if (data.saved) {
+           // if (data.saved) {
                 // Run the initPage function again. This will reload the entire list of articles
                 //   initPage();
                 //renderArticles(data)
                 showSavedArticles();
-            }
+          //  }
         });
 
     };
@@ -308,12 +307,12 @@ var noteArticleId;
             data: noteToDelete
         }).then(function (data) {
             // If the data was saved successfully
-            if (data.saved) {
+         //   if (data.saved) {
                 // Run the initPage function again. This will reload the entire list of articles
                 //   initPage();
                 //renderArticles(data)
                 showSavedArticles();
-            }
+         //   }
         });
     };
 

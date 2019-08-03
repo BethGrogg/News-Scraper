@@ -230,7 +230,7 @@ newNote.save(function(error, note) {
 // Delete a note
 app.delete("/notes/delete/:note_id/:article_id", function(req, res) {
 // Use the note id to find and delete it
-Note.findOneAndRemove({ "_id": req.params.note_id }, function(err) {
+db.Note.findOneAndRemove({ "_id": req.params.note_id }, function(err) {
   // Log any errors
   if (err) {
     console.log(err);
