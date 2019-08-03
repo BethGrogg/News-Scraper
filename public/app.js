@@ -10,6 +10,9 @@ $(document).ready(function () {
     $(document).on("click", ".saved", showSavedArticles);
     $(document).on("click", ".note", showNote);
     $(document).on("click", ".delete-article", deleteArticle);
+    $(document).on("click", ".save-note", saveNote);
+    $(document).on("click", ".delete-note", deleteNote);
+
     //   $(".clear").on("click", handleArticleClear);
     // function initPage() {
     //   // Run an AJAX request for any unsaved headlines
@@ -227,9 +230,17 @@ console.log("I am here");
             })
           
         };
-
+var noteId;
+var noteArticleId;
     function showNote() {
         console.log("i am in the note modal");
+        
+            
+            var noteArticleId = $(this)
+            .parents(".card")
+            .data();
+
+            console.log(noteArticleId);
         
     };
 
@@ -264,6 +275,46 @@ console.log("I am here");
         });
      
         
+    };
+
+    function saveNote() {
+       
+   
+
+        
+        $.ajax({
+            method: "POST",
+            url: "/notes/save/" + noteArticleId,
+            data: title
+        }).then(function (data) {
+            // If the data was saved successfully
+            if (data.saved) {
+                // Run the initPage function again. This will reload the entire list of articles
+                //   initPage();
+                //renderArticles(data)
+                showSavedArticles();
+            }
+        });
+
+    };
+
+    function deleteNote() {
+        
+
+ 
+        $.ajax({
+            method: "PUT",
+            url: "/notes/delete/" + noteToDelete.note_id + noteArticleId,
+            data: noteToDelete
+        }).then(function (data) {
+            // If the data was saved successfully
+            if (data.saved) {
+                // Run the initPage function again. This will reload the entire list of articles
+                //   initPage();
+                //renderArticles(data)
+                showSavedArticles();
+            }
+        });
     };
 
     });
