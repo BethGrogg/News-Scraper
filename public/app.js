@@ -7,7 +7,9 @@ $(document).ready(function () {
 
     $(document).on("click", ".btn.save", articleSave);
     $(document).on("click", ".scrape-new", articleScrape);
-    $(document).on("click", "", ".saved", showSavedArticles);
+    $(document).on("click", ".saved", showSavedArticles);
+    $(document).on("click", ".note", showNote);
+    $(document).on("click", ".delete-article", deleteArticle);
     //   $(".clear").on("click", handleArticleClear);
     // function initPage() {
     //   // Run an AJAX request for any unsaved headlines
@@ -113,8 +115,8 @@ console.log("I am here");
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
                 .attr("href", article.link)
                 .text(article.title),
-                $("<a class='btn btn-success save float-right'>Add Note</a>"),
-                $("<a class='btn btn-success save float-right'>Delete Article</a>")
+                $("<a class='btn btn-success note float-right' data-toggle='modal' data-target='#noteModal'>Add Note</a>"),
+                $("<a class='btn btn-success delete-article float-right'>Delete Article</a>")
             )
         );
 
@@ -225,6 +227,44 @@ console.log("I am here");
             })
           
         };
+
+    function showNote() {
+        console.log("i am in the note modal");
+        
+    };
+
+    function deleteArticle() {
+        console.log("in delete" + $(this));
+            
+            var articleToDelete = $(this)
+            .parents(".card")
+            .data();
+
+        // Remove card from page
+        $(this)
+            .parents(".card")
+            .remove();
+
+        articleToDelete.saved = false;
+        console.log("article: " + articleToDelete.saved);
+        console.log(articleToDelete._id);
+        // Using a patch method to be semantic since this is an update to an existing record in our collection
+        $.ajax({
+            method: "PUT",
+            url: "/articles/delete/" + articleToDelete._id,
+            data: articleToDelete
+        }).then(function (data) {
+            // If the data was saved successfully
+            if (data.saved) {
+                // Run the initPage function again. This will reload the entire list of articles
+                //   initPage();
+                //renderArticles(data)
+                showSavedArticles();
+            }
+        });
+     
+        
+    };
 
     });
 //************************************* */  

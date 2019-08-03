@@ -176,11 +176,13 @@ app.put("/articles/save/:id", function(req, res) {
 });
 
 // Delete an article
-app.post("/articles/delete/:id", function(req, res) {
+app.put("/articles/delete/:id", function(req, res) {
     // Use the article id to find and update its saved boolean
-    db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
+  // db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
+    db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false})
     // Execute the above query
     .then(function(dbArticle) {
+        console.log("server side delete");
         res.send(dbArticle);
     })
     .catch(function(err) {
