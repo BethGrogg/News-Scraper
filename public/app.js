@@ -119,6 +119,7 @@ var Id;
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
                 .attr("href", article.link)
                 .text(article.title),
+                $("<br></br>"),
                 $("<a class='btn btn-success note float-right' data-toggle='modal' data-target='#noteModal'>Add Note</a>"),
                 $("<a class='btn btn-success delete-article float-right'>Delete Article</a>")
             )
