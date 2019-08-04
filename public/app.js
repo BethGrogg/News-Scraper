@@ -69,7 +69,7 @@ $(document).ready(function () {
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
-                .attr("href", article.link)
+                .attr("href", "https://www.entrepreneur.com"+article.link)
                 .text(article.title),
                 $("<a class='btn btn-success save float-right'>Save Article</a>")
             )
@@ -97,7 +97,7 @@ $(document).ready(function () {
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
-                .attr("href", article.link)
+                .attr("href", "https://www.entrepreneur.com"+article.link)
                 .text(article.title),
                 $("<br></br>"),
                 $("<a class='btn btn-success note float-right' data-toggle='modal' data-id=" + article._id+" data-target='#noteModal'>Add Note</a>"),
