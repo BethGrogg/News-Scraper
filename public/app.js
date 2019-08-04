@@ -13,30 +13,8 @@ $(document).ready(function () {
     $(document).on("click", ".save-note", saveNote);
     $(document).on("click", ".delete-note", deleteNote);
 
-    //   $(".clear").on("click", handleArticleClear);
-    // function initPage() {
-    //   // Run an AJAX request for any unsaved headlines
-    //   $.get("/api/headlines?saved=false").then(function(data) {
-    //     articleContainer.empty();
-    //     // If we have headlines, render them to the page
-    //     if (data && data.length) {
-    //       renderArticles(data);
-    //     } else {
-    //       // Otherwise render a message explaining we have no articles
-    //       renderEmpty();
-    //     }
-    //   });
-    // }
-
-
 
     $.getJSON("/articles", function (data) {
-        // For each one
-        // for (var i = 0; i < data.length; i++) {
-        //   // Display the apropos information on the page
-        //   $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-        // }
-
 
         articleContainer.empty();
         // If we have headlines, render them to the page
@@ -46,12 +24,12 @@ $(document).ready(function () {
             // Otherwise render a message explaining we have no articles
             renderEmpty();
         }
-        
+
     });
 
-   
+
     function renderArticles(articles) {
-console.log("I am here");
+
         // This function handles appending HTML containing our article data to the page
         // We are passed an array of JSON containing all available articles in our database
         var articleCards = [];
@@ -67,20 +45,20 @@ console.log("I am here");
     }
 
     function renderNewArticles(articles) {
-        console.log("I am in New Articles");
-                // This function handles appending HTML containing our article data to the page
-                // We are passed an array of JSON containing all available articles in our database
-                var articleCards = [];
-                // We pass each article JSON object to the createCard function which returns a bootstrap
-                // card with our article data inside
-                for (var i = 0; i < articles.length; i++) {
         
-                    articleCards.push(createSavedCard(articles[i]));
-                }
-                // Once we have all of the HTML for the articles stored in our articleCards array,
-                // append them to the articleCards container
-                articleContainer.append(articleCards);
-            }
+        // This function handles appending HTML containing our article data to the page
+        // We are passed an array of JSON containing all available articles in our database
+        var articleCards = [];
+        // We pass each article JSON object to the createCard function which returns a bootstrap
+        // card with our article data inside
+        for (var i = 0; i < articles.length; i++) {
+
+            articleCards.push(createSavedCard(articles[i]));
+        }
+        // Once we have all of the HTML for the articles stored in our articleCards array,
+        // append them to the articleCards container
+        articleContainer.append(articleCards);
+    }
 
     function createCard(article) {
         // This function takes in a single JSON object for an article/headline
@@ -106,13 +84,15 @@ console.log("I am here");
         // We return the constructed card jQuery element
         return card;
     }
-var Id;
+ 
+
     function createSavedCard(article) {
         // This function takes in a single JSON object for an article/headline
         // It constructs a jQuery element containing all of the formatted HTML for the
         // article card
-        console.log(article);
-        Id = article._id;
+        
+        
+        
         var card = $("<div class='card'>");
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
@@ -120,7 +100,7 @@ var Id;
                 .attr("href", article.link)
                 .text(article.title),
                 $("<br></br>"),
-                $("<a class='btn btn-success note float-right' data-toggle='modal' data-target='#noteModal'>Add Note</a>"),
+                $("<a class='btn btn-success note float-right' data-toggle='modal' data-id=" + article._id+" data-target='#noteModal'>Add Note</a>"),
                 $("<a class='btn btn-success delete-article float-right'>Delete Article</a>")
             )
         );
@@ -204,9 +184,9 @@ var Id;
                 // already in our collection, re render the articles on the page
                 // and let the user know how many unique articles we were able to save
                 //    initPage();
-                
+
                 window.location = "/"
-         //       bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
+                //       bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
             });
         });
     };
@@ -218,36 +198,67 @@ var Id;
     // }
 
     function showSavedArticles() {
-        console.log("blah"); 
-    // Route for getting saved article
-    $.getJSON("/saved", function (data) {
-        articleContainer.empty();
-                // If we have headlines, render them to the page
-                if (data && data.length) {
-                    renderNewArticles(data);
-                } else {
-                    // Otherwise render a message explaining we have no articles
-                    renderEmpty();
-                }
-            })
-          
-        };
+        
+        // Route for getting saved article
+        $.getJSON("/saved", function (data) {
+            articleContainer.empty();
+            // If we have headlines, render them to the page
+            if (data && data.length) {
+                renderNewArticles(data);
+            } else {
+                // Otherwise render a message explaining we have no articles
+                renderEmpty();
+            }
+        })
+
+    };
 
     function showNote() {
         console.log("i am in the note modal");
-        $(document).on("click", "#noteModal", function () { 
-        var articleId = Id;
-        $(".modal-body #note-body").val(body);
-            
+        var noteToSave = $(this)
+            .parents(".card")
+            .data();
+console.log("noteToSave: " + noteToSave._id);
+        
+        // $(document).on("click", "#noteModal", function () {
+        //     console.log($(this).data('id'));
+        //     console.log($(".modal-body #note-body").val());
 
-            console.log(articleId);
-        });
+        
+        // var thisId = $(this).attr("data-id");
+        // console.log("thisId" + thisId);
+        $.ajax({
+                  method: "GET",
+                  url: "/articles/" + noteToSave._id
+                })
+                  // With that done, add the note information to the page
+                  .then(function(data) {
+                    console.log(data);
+                    // The title of the article
+                    // $("#notes").append("<h2>" + data.title + "</h2>");
+                    // // An input to enter a new title
+                    // $("#notes").append("<input id='titleinput' name='title' >");
+                    // // A textarea to add a new note body
+                    // $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
+                    // // A button to submit a new note, with the id of the article saved to it
+                    // $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+            
+                    // If there's a note in the article
+                    if (data.note) {
+                      // Place the title of the note in the title input
+                      $("#titleinput").val(data.note.title);
+                      // Place the body of the note in the body textarea
+                      $("#bodyinput").val(data.note.body);
+                    }
+                  });
+
+               
     };
 
     function deleteArticle() {
-        console.log("in delete" + $(this));
-            
-            var articleToDelete = $(this)
+        
+
+        var articleToDelete = $(this)
             .parents(".card")
             .data();
 
@@ -257,8 +268,7 @@ var Id;
             .remove();
 
         articleToDelete.saved = false;
-        console.log("article: " + articleToDelete.saved);
-        console.log(articleToDelete._id);
+        console.log("articleToDelete: " + articleToDelete._id);
         // Using a patch method to be semantic since this is an update to an existing record in our collection
         $.ajax({
             method: "PUT",
@@ -273,51 +283,59 @@ var Id;
                 showSavedArticles();
             }
         });
-     
-        
+
+
     };
 
     function saveNote() {
-       
-   
 
         
-        $.ajax({
-            method: "POST",
-            url: "/notes/save/" + noteArticleId,
-            data: title
-        }).then(function (data) {
-            // If the data was saved successfully
-           // if (data.saved) {
-                // Run the initPage function again. This will reload the entire list of articles
-                //   initPage();
-                //renderArticles(data)
-                showSavedArticles();
-          //  }
+        $(".save-note").on("click", function() {
+            var thisId = $(this).attr("data-id");
+            // if (!$("#noteText" + thisId).val()) {
+            //     alert("please enter a note to save")
+            // }else {
+              $.ajax({
+                    method: "POST",
+                    url: "/notes/save/" + thisId,
+                    data: {
+                      text: $("#note-body" + thisId).val()
+                    }
+                  }).done(function(data) {
+                      // Log the response
+                      console.log("this data: " + data);
+                      // Empty the notes section
+                      $("#note-body" + thisId).val("");
+                    //  $("#noteModal").modal("hide");
+                      window.location = "/saved"
+                  });
+        //    }
         });
 
     };
 
-    function deleteNote() {
-        
+    
 
- 
+    function deleteNote() {
+
+
+
         $.ajax({
             method: "PUT",
             url: "/notes/delete/" + noteToDelete.note_id + noteArticleId,
             data: noteToDelete
         }).then(function (data) {
             // If the data was saved successfully
-         //   if (data.saved) {
-                // Run the initPage function again. This will reload the entire list of articles
-                //   initPage();
-                //renderArticles(data)
-                showSavedArticles();
-         //   }
+            //   if (data.saved) {
+            // Run the initPage function again. This will reload the entire list of articles
+            //   initPage();
+            //renderArticles(data)
+            showSavedArticles();
+            //   }
         });
     };
 
-    });
+});
 //************************************* */  
 // Grab the articles as a json
 //Handle Save Article button
