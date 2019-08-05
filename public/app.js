@@ -1,8 +1,6 @@
 /* global bootbox */
 $(document).ready(function () {
-    // Setting a reference to the article-container div where all the dynamic content will go
-    // Adding event listeners to any dynamically generated "save article"
-    // and "scrape new article" buttons
+
     var articleContainer = $(".article-container");
 
     $(document).on("click", ".btn.save", articleSave);
@@ -45,7 +43,7 @@ $(document).ready(function () {
     }
 
     function renderNewArticles(articles) {
-        
+
         // This function handles appending HTML containing our article data to the page
         // We are passed an array of JSON containing all available articles in our database
         var articleCards = [];
@@ -69,7 +67,7 @@ $(document).ready(function () {
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
-                .attr("href", "https://www.entrepreneur.com"+article.link)
+                .attr("href", "https://www.entrepreneur.com" + article.link)
                 .text(article.title),
                 $("<a class='btn btn-success save float-right'>Save Article</a>")
             )
@@ -84,23 +82,23 @@ $(document).ready(function () {
         // We return the constructed card jQuery element
         return card;
     }
- 
+
 
     function createSavedCard(article) {
         // This function takes in a single JSON object for an article/headline
         // It constructs a jQuery element containing all of the formatted HTML for the
         // article card
-        
-        
-        
+
+
+
         var card = $("<div class='card'>");
         var cardHeader = $("<div class='card-header'>").append(
             $("<h3>").append(
                 $("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
-                .attr("href", "https://www.entrepreneur.com"+article.link)
+                .attr("href", "https://www.entrepreneur.com" + article.link)
                 .text(article.title),
                 $("<br></br>"),
-                $("<a class='btn btn-success note float-right' data-toggle='modal' data-id=" + article._id+" data-target='#noteModal'>Add Note</a>"),
+                $("<a class='btn btn-success note float-right' data-toggle='modal' data-id=" + article._id + " data-target='#noteModal'>Add Note</a>"),
                 $("<a class='btn btn-success delete-article float-right'>Delete Article</a>")
             )
         );
@@ -163,8 +161,7 @@ $(document).ready(function () {
             // If the data was saved successfully
             if (data.saved) {
                 // Run the initPage function again. This will reload the entire list of articles
-                //   initPage();
-                //renderArticles(data)
+
                 window.location = "/";
             }
         });
@@ -183,22 +180,17 @@ $(document).ready(function () {
                 // If we are able to successfully scrape the NYTIMES and compare the articles to those
                 // already in our collection, re render the articles on the page
                 // and let the user know how many unique articles we were able to save
-                //    initPage();
+
 
                 window.location = "/"
-                //       bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
+
             });
         });
     };
-    // function handleArticleClear() {
-    //   $.get("api/clear").then(function() {
-    //     articleContainer.empty();
-    //     initPage();
-    //   });
-    // }
+
 
     function showSavedArticles() {
-        
+
         // Route for getting saved article
         $.getJSON("/saved", function (data) {
             articleContainer.empty();
@@ -218,46 +210,24 @@ $(document).ready(function () {
         var noteToSave = $(this)
             .parents(".card")
             .data();
-console.log("noteToSave: " + noteToSave._id);
-        
-        // $(document).on("click", "#noteModal", function () {
-        //     console.log($(this).data('id'));
-        //     console.log($(".modal-body #note-body").val());
+        console.log("noteToSave: " + noteToSave._id);
 
-$('#hidden-id').attr("data-id", noteToSave._id);
-        
-        // var thisId = $(this).attr("data-id");
-        // console.log("thisId" + thisId);
+        $('#hidden-id').attr("data-id", noteToSave._id);
+
         $.ajax({
-                  method: "GET",
-                  url: "/articles/" + noteToSave._id
-                })
-                  // With that done, add the note information to the page
-                  .then(function(data) {
-                    console.log("Checking data: " + data);
-                    // The title of the article
-                //      $("#notes").append("<h2>" + data.title + "</h2>");
-                //     // // An input to enter a new title
-                //    //  $("#notes").append("<input id='title' name='title' >");
-                //     // // A textarea to add a new note body
-                //      $("#notes").append("<textarea rows='5' id='body' name='body'></textarea>");
-                //     // // A button to submit a new note, with the id of the article saved to it
-                //      $("#notes").append("<button data-id='" + data._id + "' id='save-note'>Save Note</button>");
-            
-                //     // If there's a note in the article
-                //     if (data.note) {
-                //       // Place the title of the note in the title input
-                //       $("#titleinput").val(data.title);
-                //       // Place the body of the note in the body textarea
-                //       $("#bodyinput").val(data.body);
-                //     }
-                  });
+                method: "GET",
+                url: "/articles/" + noteToSave._id
+            })
+            // With that done, add the note information to the page
+            .then(function (data) {
+                console.log("Checking data: " + data);
 
-               
+            });
+
     };
 
     function deleteArticle() {
-        
+
 
         var articleToDelete = $(this)
             .parents(".card")
@@ -279,8 +249,7 @@ $('#hidden-id').attr("data-id", noteToSave._id);
             // If the data was saved successfully
             if (data.saved) {
                 // Run the initPage function again. This will reload the entire list of articles
-                //   initPage();
-                //renderArticles(data)
+
                 showSavedArticles();
             }
         });
@@ -289,133 +258,43 @@ $('#hidden-id').attr("data-id", noteToSave._id);
     };
 
     function saveNote() {
-        
-      //  $(".save-note").on("click", function() {
-          
-            var thisId = $("#hidden-id").attr("data-id");
-            console.log("thisId:" + thisId);
-            // if (!$("#noteText" + thisId).val()) {
-            //     alert("please enter a note to save")
-            // }else {
-              $.ajax({
-                    method: "POST",
-                    url: "/notes/save/" + thisId,
-                    data: {
-                      title: thisId,
-                      body: $("#note-body").val()
-                    }
-                  }).done(function(data) {
-                      // Log the response
-                      console.log("this data: " + data);
-                      // Empty the notes section
-                     // $("#note-body" + thisId).val("");
-                    //  $("#noteModal").modal("hide");
-                    //  window.location = "/saved"
-                    //$('#noteModal').modal('hide');
-                  });
-        //    }
-    //    });
+
+        var thisId = $("#hidden-id").attr("data-id");
+        console.log("thisId:" + thisId);
+
+        $.ajax({
+            method: "POST",
+            url: "/notes/save/" + thisId,
+            data: {
+                title: thisId,
+                body: $("#note-body").val()
+            }
+        }).done(function (data) {
+            // Log the response
+            console.log("this data: " + data);
+            // Empty the notes section
+            // $("#note-body").val("");
+
+        });
 
     };
 
-    
+
 
     function deleteNote() {
 
-var articleId = ($("#hidden-id").attr("data-id"));
-var Id = ($("#note-id").attr("data-id"));
+        var articleId = ($("#hidden-id").attr("data-id"));
+
+        var Id = ($("#note-id").attr("data-id"));
 
         $.ajax({
             method: "DELETE",
             url: "/notes/delete/" + articleId + Id,
-            
+
         }).then(function (data) {
             // If the data was saved successfully
-            //   if (data.saved) {
-            // Run the initPage function again. This will reload the entire list of articles
-            //   initPage();
-            //renderArticles(data)
-            showSavedArticles();
-           // $('#noteModal').modal('toggle');
-            //   }
+
         });
     };
 
 });
-//************************************* */  
-// Grab the articles as a json
-//Handle Save Article button
-// $(".save").on("click", function() {
-//     var thisId = $(this).attr("data-id");
-//     $.ajax({
-//         method: "POST",
-//         url: "/articles/save/" + thisId
-//     }).done(function(data) {
-//         console.log("data: " + data);
-//         window.location = "/"
-//     })
-// });
-
-
-//   // Whenever someone clicks a p tag
-//   $(document).on("click", "p", function() {
-//     // Empty the notes from the note section
-//     $("#notes").empty();
-//     // Save the id from the p tag
-//     var thisId = $(this).attr("data-id");
-
-//     // Now make an ajax call for the Article
-//     $.ajax({
-//       method: "GET",
-//       url: "/articles/" + thisId
-//     })
-//       // With that done, add the note information to the page
-//       .then(function(data) {
-//         console.log(data);
-//         // The title of the article
-//         $("#notes").append("<h2>" + data.title + "</h2>");
-//         // An input to enter a new title
-//         $("#notes").append("<input id='titleinput' name='title' >");
-//         // A textarea to add a new note body
-//         $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-//         // A button to submit a new note, with the id of the article saved to it
-//         $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
-
-//         // If there's a note in the article
-//         if (data.note) {
-//           // Place the title of the note in the title input
-//           $("#titleinput").val(data.note.title);
-//           // Place the body of the note in the body textarea
-//           $("#bodyinput").val(data.note.body);
-//         }
-//       });
-//   });
-
-//   // When you click the savenote button
-//   $(document).on("click", "#savenote", function() {
-//     // Grab the id associated with the article from the submit button
-//     var thisId = $(this).attr("data-id");
-
-//     // Run a POST request to change the note, using what's entered in the inputs
-//     $.ajax({
-//       method: "POST",
-//       url: "/articles/" + thisId,
-//       data: {
-//         // Value taken from title input
-//         title: $("#titleinput").val(),
-//         // Value taken from note textarea
-//         body: $("#bodyinput").val()
-//       }
-//     })
-//       // With that done
-//       .then(function(data) {
-//         // Log the response
-//         console.log(data);
-//         // Empty the notes section
-//         $("#notes").empty();
-//       });
-
-//     // Also, remove the values entered in the input and textarea for note entry
-//     $("#titleinput").val("");
-//     $("#bodyinput").val("");
-//   });
