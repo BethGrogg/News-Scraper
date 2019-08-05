@@ -224,6 +224,7 @@ console.log("noteToSave: " + noteToSave._id);
         //     console.log($(this).data('id'));
         //     console.log($(".modal-body #note-body").val());
 
+$('#hidden-id').attr("data-id", noteToSave._id);
         
         // var thisId = $(this).attr("data-id");
         // console.log("thisId" + thisId);
@@ -233,23 +234,23 @@ console.log("noteToSave: " + noteToSave._id);
                 })
                   // With that done, add the note information to the page
                   .then(function(data) {
-                    console.log(data);
+                    console.log("Checking data: " + data);
                     // The title of the article
-                    // $("#notes").append("<h2>" + data.title + "</h2>");
-                    // // An input to enter a new title
-                    // $("#notes").append("<input id='titleinput' name='title' >");
-                    // // A textarea to add a new note body
-                    // $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-                    // // A button to submit a new note, with the id of the article saved to it
-                    // $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+                //      $("#notes").append("<h2>" + data.title + "</h2>");
+                //     // // An input to enter a new title
+                //    //  $("#notes").append("<input id='title' name='title' >");
+                //     // // A textarea to add a new note body
+                //      $("#notes").append("<textarea rows='5' id='body' name='body'></textarea>");
+                //     // // A button to submit a new note, with the id of the article saved to it
+                //      $("#notes").append("<button data-id='" + data._id + "' id='save-note'>Save Note</button>");
             
-                    // If there's a note in the article
-                    if (data.note) {
-                      // Place the title of the note in the title input
-                      $("#titleinput").val(data.note.title);
-                      // Place the body of the note in the body textarea
-                      $("#bodyinput").val(data.note.body);
-                    }
+                //     // If there's a note in the article
+                //     if (data.note) {
+                //       // Place the title of the note in the title input
+                //       $("#titleinput").val(data.title);
+                //       // Place the body of the note in the body textarea
+                //       $("#bodyinput").val(data.body);
+                //     }
                   });
 
                
@@ -288,10 +289,11 @@ console.log("noteToSave: " + noteToSave._id);
     };
 
     function saveNote() {
-
         
-        $(".save-note").on("click", function() {
-            var thisId = $(this).attr("data-id");
+      //  $(".save-note").on("click", function() {
+          
+            var thisId = $("#hidden-id").attr("data-id");
+            console.log("thisId:" + thisId);
             // if (!$("#noteText" + thisId).val()) {
             //     alert("please enter a note to save")
             // }else {
@@ -299,18 +301,20 @@ console.log("noteToSave: " + noteToSave._id);
                     method: "POST",
                     url: "/notes/save/" + thisId,
                     data: {
-                      text: $("#note-body" + thisId).val()
+                      title: thisId,
+                      body: $("#note-body").val()
                     }
                   }).done(function(data) {
                       // Log the response
                       console.log("this data: " + data);
                       // Empty the notes section
-                      $("#note-body" + thisId).val("");
+                     // $("#note-body" + thisId).val("");
                     //  $("#noteModal").modal("hide");
-                      window.location = "/saved"
+                    //  window.location = "/saved"
+                    //$('#noteModal').modal('hide');
                   });
         //    }
-        });
+    //    });
 
     };
 
@@ -318,12 +322,13 @@ console.log("noteToSave: " + noteToSave._id);
 
     function deleteNote() {
 
-
+var articleId = ($("#hidden-id").attr("data-id"));
+var Id = ($("#note-id").attr("data-id"));
 
         $.ajax({
-            method: "PUT",
-            url: "/notes/delete/" + noteToDelete.note_id + noteArticleId,
-            data: noteToDelete
+            method: "DELETE",
+            url: "/notes/delete/" + articleId + Id,
+            
         }).then(function (data) {
             // If the data was saved successfully
             //   if (data.saved) {
@@ -331,6 +336,7 @@ console.log("noteToSave: " + noteToSave._id);
             //   initPage();
             //renderArticles(data)
             showSavedArticles();
+           // $('#noteModal').modal('toggle');
             //   }
         });
     };

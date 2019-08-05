@@ -137,7 +137,8 @@ app.get("/articles/:id", function(req, res) {
 
 // Route for saving/updating an Article's associated Note
 app.post("/articles/:id", function(req, res) {
-
+console.log("in here, req.body: " +req.body);
+console.log("req.params.id" + req.params.id);
     // TODO
   // ====
   // save the new note that gets posted to the Notes collection
@@ -163,7 +164,7 @@ app.post("/articles/:id", function(req, res) {
 // Save an article
 app.put("/articles/save/:id", function(req, res) {
     // Use the article id to find and update its saved boolean
-    console.log("in here: " + req.params);
+    
     db.Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": true})
     // Execute the above query
     .then(function(dbArticle) {
@@ -196,63 +197,39 @@ app.put("/articles/delete/:id", function(req, res) {
 // Create a new note
 app.post("/notes/save/:id", function(req, res) {
 // Create a new note and pass the req.body to the entry
-var newNote = new db.Note({
-  body: req.body.text,
-  title: req.params.id
-});
-console.log("notesave: " + req.body)
+db.Note.create(req.body)
+
 // And save the new note the db
-newNote.save(function(error, note) {
-  // Log any errors
-  if (error) {
-    console.log(error);
-  }
-  // Otherwise
-  else {
-    // Use the article id to find and update it's notes
-    db.Article.findOneAndUpdate({ "_id": req.params.id }, {$push: { "notes": note } })
-    // Execute the above query
-    .exec(function(err) {
-      // Log any errors
-      if (err) {
-        console.log(err);
-        res.send(err);
-      }
-      else {
-        // Or send the note to the browser
-        res.send(note);
-      }
-    });
-  }
+.then(function (dbNote) {
+    
+    return db.Article.findOneAndUpdate({_id: req.params.id }, {$push: {note:dbNote._id}}, { new: true });
+})
+.then(function (dbArticle) {
+    res.json(dbArticle);
+})
+.catch(function(err) {
+    res.json(err);
 });
 });
 
+    // Use the article id to find and update it's notes
+ 
 // Delete a note
-app.delete("/notes/delete/:note_id/:article_id", function(req, res) {
+app.delete("/notes/delete/:article_id/:note_id", function(req, res) {
 // Use the note id to find and delete it
-db.Note.findOneAndRemove({ "_id": req.params.note_id }, function(err) {
-  // Log any errors
-  if (err) {
-    console.log(err);
-    res.send(err);
-  }
-  else {
-    db.Article.findOneAndUpdate({ "_id": req.params.article_id }, {$pull: {"notes": req.params.note_id}})
-     // Execute the above query
-      .exec(function(err) {
-        // Log any errors
-        if (err) {
-          console.log(err);
-          res.send(err);
-        }
-        else {
-          // Or send the note to the browser
-          res.send("Note Deleted");
-        }
-      });
-  }
+db.Note.findOneAndRemove({ "_id": req.params.note_id })
+.then(function (dbNote) {
+    return db.Article.findOneAndUpdate({ note: req.params.id }, { $pullAll: [{ note: req.params.id }]});
+
+})
+.then (function (dbArticle) {
+    res.json(dbArticle);
+})
+.catch(function (err) {
+    res.json(err);
 });
 });
+
 
 
 // Start the server
