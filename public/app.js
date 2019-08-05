@@ -286,7 +286,7 @@ $(document).ready(function () {
         var articleId = ($("#hidden-id").attr("data-id"));
 
         var Id = ($("#note-id").attr("data-id"));
-
+        $("#note-body").val("");
         $.ajax({
             method: "DELETE",
             url: "/notes/delete/" + articleId + Id,
