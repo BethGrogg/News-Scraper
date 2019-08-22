@@ -16,7 +16,7 @@ Technologies Used:
     * axios
 
 
-![News Scraper](/News Scraper.png)
+![News Scraper](/NewsScraper.png)
 
 
 Created by Bethany Grogg
